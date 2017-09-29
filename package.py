@@ -8,7 +8,6 @@ authors = ['fredrik.brannbacka']
 
 build_requires = [
 	"cmake-3",
-	"pyside_tools"
 ]
 
 requires = [
@@ -18,11 +17,16 @@ requires = [
 	"oiio-1",
 	"glew-2",
 	"opensubdiv",
-	"pyside-1",
+	"PySide-1.2",
 	"PyOpenGL",
-	"Jinja2",
-	"maya-2017"
+	"Jinja2"
 ]
+
+@early()
+def variants():
+    from rez.package_py_utils import expand_requires
+    requires = ["platform-**", "os-*.*", "python-2.7"]
+    return [expand_requires(*requires)]
 
 def commands():
     env.PATH.prepend("{root}/bin")
