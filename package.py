@@ -2,9 +2,16 @@
 
 name = 'usd'
 
-version = '19.07'
+version = 'bundled-19.07'
 
 authors = ['frbr']
+
+build_requires = [
+    "python-2.7-native",
+    "virtualenv",
+    "cmake-3+",
+    "devtoolset-7",
+]
 
 variants = [["platform-linux"]]
 
@@ -19,7 +26,8 @@ then
     # Clone USD
     git clone https://github.com/PixarAnimationStudios/USD.git USD
     cd USD
-    git checkout v$REZ_BUILD_PROJECT_VERSION
+    #git checkout v$REZ_BUILD_PROJECT_VERSION
+    git checkout v19.07
     # Build USD
     python build_scripts/build_usd.py $REZ_BUILD_INSTALL_PATH\
         --src $REZ_BUILD_SOURCE_PATH/build/DEP_SOURCE\
