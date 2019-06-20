@@ -46,7 +46,7 @@ if [[ ! -f "$CORE_BUILD_FILE" ]]; then
     # Create Virtualenv
     virtualenv --python=python2 $INSTALL_ROOT/.venv
     source $INSTALL_ROOT/.venv/bin/activate
-    pip install PyOpenGL PySide2
+    pip install PyOpenGL PySide2 Jinja2
 
     # Clone USD
     git clone https://github.com/PixarAnimationStudios/USD.git $BUILD_ROOT/USD || true
@@ -115,7 +115,7 @@ if [[ ! -z "$REZ_MAYA_ROOT" ]]; then
      --src $BUILD_ROOT/DEP_SOURCE\
      --build $BUILD_ROOT/DEP_BUILD\
      --inst $DEPENDENCIES_ROOT\
-     --maya --maya-location $REZ_MAYA_ROOT --force maya \
+     --maya --maya-location $REZ_MAYA_ROOT/maya --force maya \
      --build-args USD,-DCMAKE_INSTALL_PREFIX=$REZ_BUILD_INSTALL_PATH
 fi 
 
