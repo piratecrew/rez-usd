@@ -38,15 +38,15 @@ if [[ ! -f "$CORE_BUILD_FILE" ]]; then
     #As we are in a undefined variants environment
     # we need to clean it up when building USD-Core.
     # We store some ENV_VARS and restoring them later
-    OLD_PYTHONPATH=$PYTHONPATH
-    OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+    #OLD_PYTHONPATH=$PYTHONPATH
+    #OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
     # Clear LD_LIBRARY_PATH to make sure we don't pickup variant specific libraries
-    unset LD_LIBRARY_PATH
+    #unset LD_LIBRARY_PATH
 
     # Create Virtualenv
-    virtualenv --python=python2 $INSTALL_ROOT/.venv
-    source $INSTALL_ROOT/.venv/bin/activate
-    pip install PyOpenGL PySide2 Jinja2
+    #virtualenv --python=python2 $INSTALL_ROOT/.venv
+    #source $INSTALL_ROOT/.venv/bin/activate
+    #pip install PyOpenGL PySide2==5.12 Jinja2
 
     # Clone USD
     git clone https://github.com/PixarAnimationStudios/USD.git $BUILD_ROOT/USD || true
@@ -59,10 +59,9 @@ if [[ ! -f "$CORE_BUILD_FILE" ]]; then
 
     # Houdini will mess up python path for PySide2.
     # We clear PYTHONPATH to use PySide2 from the virtualenv
-    unset PYTHONPATH
+    #unset PYTHONPATH
 
-    # Houdini will mess up curl, make sure we use libcurl from system TODO: Remove, This is probably not needed as we clear LD_LIBRARY_PATH
-    python build_scripts/build_usd.py -v $USD_CORE_ROOT\
+    python build_scripts/build_usd.py -v -v $USD_CORE_ROOT\
         --src $BUILD_ROOT/DEP_SOURCE\
         --build $BUILD_ROOT/DEP_BUILD\
         --inst $DEPENDENCIES_ROOT\
@@ -73,50 +72,45 @@ if [[ ! -f "$CORE_BUILD_FILE" ]]; then
     # create build file to make sure we don't rebuild core for the other variants
     touch $CORE_BUILD_FILE
     # Deactivate the venv
-    echo "DEACTIVATE"
-    deactivate
+    #echo "DEACTIVATE"
+    #deactivate
     # Restore PYTHONPATH and LD_LIBRARY_PATH
-    export PYTHONPATH=$OLD_PYTHONPATH
-    export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
+    #export PYTHONPATH=$OLD_PYTHONPATH
+    #export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
 else
     echo "USD Core already built, skipping"
     cd $BUILD_ROOT/USD
 fi
 
 # Now handle the current variant
-
-# Is houdini variant?
-if [[ ! -z "$REZ_HOUDINI_ROOT" ]]; then
+# Is renderman variant?
+if [[ ! -z "$REZ_RENDERMAN_ROOT" ]]; then
     export USD_VERSION=19.07
     export USD_ROOT=$USD_CORE_ROOT
-    echo "Building Houdini variant: houdini-$REZ_HOUDINI_MAJOR_VERSION.$REZ_HOUDINI_MINOR_VERSION"
-    source $INSTALL_ROOT/.venv/bin/activate
+    echo "Building Renderman variant: renderman-$REZ_RENDERMAN_MAJOR_VERSION.$REZ_RENDERMAN_MINOR_VERSION"
     rm $BUILD_ROOT/DEP_BUILD/USD/CMakeCache.txt || true
-    LD_PRELOAD=/lib64/libcurl.so.4 python build_scripts/build_usd.py -v -v \
+    python build_scripts/build_usd.py -v -v \
      $USD_CORE_ROOT\
-     --no-imaging\
      --src $BUILD_ROOT/DEP_SOURCE\
      --build $BUILD_ROOT/DEP_BUILD\
      --inst $DEPENDENCIES_ROOT\
-     --houdini --houdini-location $REZ_HOUDINI_ROOT --force houdini \
+     --prman --prman-location $REZ_RENDERMAN_ROOT --force prman \
      --build-args USD,-DCMAKE_INSTALL_PREFIX=$REZ_BUILD_INSTALL_PATH
 fi 
 
+# Now handle the current variant
 # Is maya variant?
 if [[ ! -z "$REZ_MAYA_ROOT" ]]; then
     export USD_VERSION=19.07
     export USD_ROOT=$USD_CORE_ROOT
-    echo "Building Maya variant: houdini-$REZ_MAYA_MAJOR_VERSION.$REZ_MAYA_MINOR_VERSION"
-    source $INSTALL_ROOT/.venv/bin/activate
+    echo "Building Maya variant: maya-$REZ_MAYA_MAJOR_VERSION.$REZ_MAYA_MINOR_VERSION"
     rm $BUILD_ROOT/DEP_BUILD/USD/CMakeCache.txt || true
-    LD_PRELOAD=/lib64/libcurl.so.4 python build_scripts/build_usd.py -v -v \
+    python build_scripts/build_usd.py -v -v \
      $USD_CORE_ROOT\
-     --no-imaging\
      --src $BUILD_ROOT/DEP_SOURCE\
      --build $BUILD_ROOT/DEP_BUILD\
      --inst $DEPENDENCIES_ROOT\
      --maya --maya-location $REZ_MAYA_ROOT/maya --force maya \
      --build-args USD,-DCMAKE_INSTALL_PREFIX=$REZ_BUILD_INSTALL_PATH
-fi 
-
+fi
 exit 0

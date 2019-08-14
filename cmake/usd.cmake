@@ -1,0 +1,1 @@
+set(USD_ROOT ${REZ_USD_ROOT}/USD-Core)
