@@ -2,56 +2,42 @@
 
 name = 'usd'
 
-version = '19.07'
+version = '19.11'
 
 authors = ['frbr']
 
-build_requires = [
-    "python-2.7",
-    "PySide-2",
-    "Jinja2-2",
-    "PyOpenGL-3",
-    "virtualenv",
-    "cmake-3+",
-    "devtoolset-7",
-]
+@late()
+def build_requires():
+    result = [
+        "Jinja2-2",
+        "cmake-3+",
+        "devtoolset-7",
+        "~PySide-2|5",
+    ]
+    if in_context() and "PySide" in request:
+        result.append("PyOpenGL-3")
 
-requires = [
-    "python-2.7",
-    "PySide-2",
-    "Jinja2-2",
-    "PyOpenGL-3",
-]
+    return result
+
+@late()
+def requires():
+    result = []
+    if in_context() and "PySide" in request:
+        result.append("PyOpenGL-3")
+
+    return result
 
 variants = [
-    ["platform-linux"],
-    ["platform-linux", "renderman-22.6"],
-    ["platform-linux", "maya-2018"],
-    ["platform-linux", "maya-2019"]
+    ["platform-linux", "python-2.7", "!PySide"],
+    ["platform-linux", "python-2.7", "PySide-2"],
 ]
 
-build_command = "bash $REZ_BUILD_SOURCE_PATH/build_usd.sh; cp -r $REZ_BUILD_SOURCE_PATH/cmake $REZ_BUILD_INSTALL_PATH/"
+hashed_variants = True
 
-def commands():  
-    if "maya" in resolve:
-        env.MAYA_PLUG_IN_PATH.append('{root}/third_party/maya/plugin')
-        env.MAYA_SCRIPT_PATH.append('{root}/third_party/maya/lib/usd/usdMaya/resources')
-        env.MAYA_SCRIPT_PATH.append('{root}/third_party/maya/plugin/pxrUsdPreviewSurface/resources')
-        env.PYTHONPATH.append('{root}/lib/python')
-        env.XBMLANGPATH.append('{root}/third_party/maya/lib/usd/usdMaya/resources')
-    elif "houdini" in resolve:
-        env.HOUDINI_PATH.append('{root}/third_party/houdini')
-        env.HOUDINI_DSO_ERROR = 1
-        env.HOUDINI_DSO_PATH.append('@/plugin')
-        env.HOUDINI_DSO_PATH.append('&')
-        env.HOUDINI_SCRIPT_PATH.append('@/scripts')
-        env.HOUDINI_SCRIPT_PATH.append('{root}/lib/python')
-        env.HOUDINI_SCRIPT_PATH.append('&')
-        env.PYTHONPATH.append('{root}/lib/python')
-    elif "renderman" in resolve:
-        env.PYTHONPATH.append('{root}/lib/python')
-        env.RMAN_SHADERPATH.append('{root}/plugin/usd/resources/shaders')
-        env.RMAN_TEXTUREPATH.append('{root}/plugin/usd')
-    else:
-        env.PYTHONPATH.append("{base}/platform-linux/USD-Core/lib/python")
-    env.PATH.prepend("{base}/platform-linux/USD-Core/bin")
+build_command = "bash {root}/build_usd.sh"
+
+def commands():
+    env.PYTHONPATH.append("{root}/lib/python")
+    env.PATH.prepend("{root}/bin")
+    if building:
+        env.USD_DEPENDENCIES_ROOT.append("{base}/USD-Dependencies/{resolve.platform.version}")
