@@ -6,18 +6,13 @@ version = '19.11'
 
 authors = ['frbr']
 
-@late()
-def build_requires():
-    result = [
-        "Jinja2-2",
-        "cmake-3+",
-        "devtoolset-7",
-        "~PySide-2|5",
-    ]
-    if in_context() and "PySide" in request:
-        result.append("PyOpenGL-3")
-
-    return result
+build_requires = [
+    "Jinja2-2",
+    "cmake-3+",
+    "devtoolset-7",
+    "~PySide-2|5",
+    "PyOpenGL-3"
+]
 
 @late()
 def requires():
