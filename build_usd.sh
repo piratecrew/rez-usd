@@ -41,7 +41,7 @@ if [[ $REZ_USED_RESOLVE == *"PySide"* ]]; then
     --src $BUILD_ROOT/DEP_SOURCE\
     --build $BUILD_ROOT/DEP_BUILD\
     --inst $DEPENDENCIES_ROOT\
-    --openimageio --opencolorio --ptex --force boost\
+    --openimageio --opencolorio --ptex\
     --alembic --no-hdf5\
     --materialx\
     --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
@@ -50,7 +50,7 @@ else
     --src $BUILD_ROOT/DEP_SOURCE\
     --build $BUILD_ROOT/DEP_BUILD\
     --inst $DEPENDENCIES_ROOT\
-    --no-imaging\
+    --openimageio --opencolorio --ptex --no-usdview\
     --alembic --no-hdf5\
     --materialx\
     --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"

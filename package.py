@@ -19,7 +19,6 @@ def requires():
     result = []
     if in_context() and "PySide" in request:
         result.append("PyOpenGL-3")
-
     return result
 
 variants = [
