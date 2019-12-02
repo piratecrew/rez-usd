@@ -15,8 +15,6 @@ echo "DEPENDENCIES_ROOT=$DEPENDENCIES_ROOT"
 echo ""
 echo "#######################"
 
-
-
 if [[ ! $REZ_BUILD_INSTALL -eq 1 ]];
 then
     echo not running rez-install;
@@ -25,8 +23,8 @@ fi
 
 if [[ $REZ_IN_REZ_RELEASE -eq 1 ]];
 then
-    echo "Remove build files as we are releasing: $BUILD_ROOT/*";
-    rm -rf $BUILD_ROOT/* || true
+    echo "Remove build files as we are releasing: $BUILD_ROOT/{DEP_BUILD,USD}";
+    rm -rf $BUILD_ROOT/{DEP_BUILD,USD} || true
 fi
 
 mkdir -p $REZ_BUILD_INSTALL_PATH;
