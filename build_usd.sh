@@ -22,6 +22,13 @@ then
     echo not running rez-install;
     exit 1
 fi
+
+if [[ $REZ_IN_REZ_RELEASE -eq 1 ]];
+then
+    echo "Remove build files as we are releasing: $BUILD_ROOT/*";
+    rm -rf $BUILD_ROOT/* || true
+fi
+
 mkdir -p $REZ_BUILD_INSTALL_PATH;
 
 # Clone USD
