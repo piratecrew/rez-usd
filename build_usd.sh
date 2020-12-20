@@ -2,9 +2,8 @@
 set -e
 
 PROJECT_PATH=$REZ_BUILD_SOURCE_PATH
-BUILD_ROOT=$REZ_BUILD_SOURCE_PATH/build
-USD_CORE_ROOT=$INSTALL_ROOT/USD-Core
-DEPENDENCIES_ROOT=$(echo $REZ_BUILD_INSTALL_PATH | sed "s@$REZ_BUILD_VARIANT_SUBPATH@USD-Dependencies/$REZ_PLATFORM_VERSION@g")
+BUILD_ROOT=$PROJECT_PATH/build
+DEPENDENCIES_ROOT=$(echo $REZ_BUILD_INSTALL_PATH | sed "s@$REZ_BUILD_VARIANT_SUBPATH@USD-Dependencies/$REZ_PLATFORM_VERSION/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION@g")
 
 echo "###### VARIABLE #######"
 echo ""
@@ -32,6 +31,7 @@ mkdir -p $REZ_BUILD_INSTALL_PATH;
 # Clone USD
 git clone https://github.com/PixarAnimationStudios/USD.git $BUILD_ROOT/USD || true
 cd $BUILD_ROOT/USD
+git pull origin release
 git checkout v$REZ_BUILD_PROJECT_VERSION
 
 #python build_scripts/build_usd.py -h
@@ -41,11 +41,12 @@ git checkout v$REZ_BUILD_PROJECT_VERSION
 # Build USD
 ################################
 
-if [[ $REZ_USED_RESOLVE == *"PySide"* ]]; then
+if [[ $REZ_USED_RESOLVE == *"PySide2"* ]]; then
     python build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
     --src $BUILD_ROOT/DEP_SOURCE\
-    --build $BUILD_ROOT/DEP_BUILD\
+    --build $BUILD_ROOT/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION/DEP_BUILD\
     --inst $DEPENDENCIES_ROOT\
+    --docs\
     --openimageio --opencolorio --ptex\
     --alembic --no-hdf5\
     --materialx\
@@ -53,9 +54,10 @@ if [[ $REZ_USED_RESOLVE == *"PySide"* ]]; then
 else
     python build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
     --src $BUILD_ROOT/DEP_SOURCE\
-    --build $BUILD_ROOT/DEP_BUILD\
+    --build $BUILD_ROOT/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION/DEP_BUILD\
     --inst $DEPENDENCIES_ROOT\
     --openimageio --opencolorio --ptex --no-usdview\
+    --docs\
     --alembic --no-hdf5\
     --materialx\
     --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
