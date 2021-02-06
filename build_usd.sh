@@ -50,7 +50,7 @@ if [[ $REZ_USED_RESOLVE == *"PySide2"* ]]; then
     --openimageio --opencolorio --ptex\
     --alembic --no-hdf5\
     --materialx\
-    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
+    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w" USD, -DRPATH_INSTALL_PATH="\$ORIGIN/.;\$ORIGIN/../../..;$DEPENDENCIES_ROOT"
 else
     python build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
     --src $BUILD_ROOT/DEP_SOURCE\
@@ -60,5 +60,5 @@ else
     --docs\
     --alembic --no-hdf5\
     --materialx\
-    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
+    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,-DCMAKE_CXX_FLAGS=-w" USD, "-DRPATH_INSTALL_PATH="\$ORIGIN/.;\$ORIGIN/../../..;$DEPENDENCIES_ROOT"
 fi
