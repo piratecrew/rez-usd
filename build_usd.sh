@@ -4,9 +4,10 @@ set -e
 PROJECT_PATH=$REZ_BUILD_SOURCE_PATH
 BUILD_ROOT=$PROJECT_PATH/build
 DEPENDENCIES_ROOT=$(echo $REZ_BUILD_INSTALL_PATH | sed "s@$REZ_BUILD_VARIANT_SUBPATH@USD-Dependencies/$REZ_PLATFORM_VERSION/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION@g")
-
+PYTHON=python$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION
 echo "###### VARIABLE #######"
 echo ""
+echo "PYTHON=$PYTHON ($(which $PYTHON))"
 echo "REZ_BUILD_INSTALL_PATH=$REZ_BUILD_INSTALL_PATH"
 echo "PROJECT_PATH=$PROJECT_PATH"
 echo "BUILD_ROOT=$BUILD_ROOT"
@@ -40,25 +41,24 @@ git checkout v$REZ_BUILD_PROJECT_VERSION
 ################################
 # Build USD
 ################################
-
 if [[ $REZ_USED_RESOLVE == *"PySide2"* ]]; then
-    python build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
+    $PYTHON build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
     --src $BUILD_ROOT/DEP_SOURCE\
     --build $BUILD_ROOT/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION/DEP_BUILD\
-    --inst $DEPENDENCIES_ROOT\
     --docs\
     --openimageio --opencolorio --ptex\
     --alembic --no-hdf5\
     --materialx\
-    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w" USD, -DRPATH_INSTALL_PATH="\$ORIGIN/.;\$ORIGIN/../../..;$DEPENDENCIES_ROOT"
+    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
 else
-    python build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
+    $PYTHON build_scripts/build_usd.py -v -v $REZ_BUILD_INSTALL_PATH\
     --src $BUILD_ROOT/DEP_SOURCE\
     --build $BUILD_ROOT/python-$REZ_PYTHON_MAJOR_VERSION.$REZ_PYTHON_MINOR_VERSION/DEP_BUILD\
-    --inst $DEPENDENCIES_ROOT\
     --openimageio --opencolorio --ptex --no-usdview\
     --docs\
     --alembic --no-hdf5\
     --materialx\
-    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND OpenColorIO,-DCMAKE_CXX_FLAGS=-w" USD, "-DRPATH_INSTALL_PATH="\$ORIGIN/.;\$ORIGIN/../../..;$DEPENDENCIES_ROOT"
+    --build-args OpenImageIO,-DOpenGL_GL_PREFERENCE=GLVND, OpenColorIO,"-DCMAKE_CXX_FLAGS=-w"
 fi
+$PYTHON $PROJECT_PATH/localize_rpaths.py $REZ_BUILD_INSTALL_PATH
+
