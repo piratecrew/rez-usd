@@ -1,9 +1,50 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Localize RPATHS for dynamic libraries e.g. ".so files"
+
+This script will use the linux commands `ldd` and `patchelf` to localize RUNPATH for dynamic
+libraries in a "package".
+
+Local Dependencies:
+    Dependencies that resides in the package tree needs to have an RPATH that is relative
+    to make sure the package is relocatable.
+
+External Paths:
+    For dependencies outside of the package tree, we should clear the RPATH from those paths.
+    It is up to the environment to make sure those dependencies are found.
+    By setting the LD_LIBRARY_PATH
+
+Example:
+    Let say we have a file tree that looks like this:
+    .
+    └── mount
+        ├── package
+        │   ├── lib
+        │   │   ├── base.so
+        │   │   └── python
+        │   │       └── module.so
+        │   └── lib64
+        │       └── base64.so
+        └── lib
+            └── external.so
+
+
+    Let's say module.so is dependent on base.so, base64.so and, external.so.
+    module.so in this case could have an rpath that looks like:
+    `/mount/package/lib:/mount/package/lib64:/mount/lib`
+
+    What we want is:
+    `$ORIGIN/..:$ORIGIN/../../lib64`
+
+Usage:
+    python localize_rpaths.py /mount/package [--patchelf=/usr/bin/patchelf]
+
+"""
+
 from __future__ import print_function
 import os
 import argparse
 from functools import partial
-from os.path import relpath
 import subprocess
 import re
 
